@@ -92,7 +92,7 @@ size: 0
 - **虚引用**：虚引用是最弱的引用，在 Java 中使用 PhantomReference 进行定义。虚引用中唯一的作用就是用队列接收对象即将死亡的通知
 
 
-接着再来看下代码，我们使用反射的方式来看看`GC`后`ThreadLocal`中的数据情况：(下面代码来源自：https://blog.csdn.net/thewindkee/article/details/103726942，本地运行演示GC回收场景)
+接着再来看下代码，我们使用反射的方式来看看`GC`后`ThreadLocal`中的数据情况：(下面代码来源自：https://blog.csdn.net/thewindkee/article/details/103726942 本地运行演示GC回收场景)
 
 ```java
 public class ThreadLocalDemo {
@@ -186,7 +186,7 @@ public void set(T value) {
 }
 
 void createMap(Thread t, T firstValue) {
-    t.threadLocals = new `ThreadLocalMap`(this, firstValue);
+    t.threadLocals = new ThreadLocalMap(this, firstValue);
 }
 ```
 
@@ -338,7 +338,7 @@ private void set(ThreadLocal<?> key, Object value) {
     for (Entry e = tab[i];
          e != null;
          e = tab[i = nextIndex(i, len)]) {
-        `ThreadLocal`<?> k = e.get();
+        ThreadLocal<?> k = e.get();
 
         if (k == key) {
             e.value = value;
@@ -420,7 +420,7 @@ private void replaceStaleEntry(ThreadLocal<?> key, Object value,
          (e = tab[i]) != null;
          i = nextIndex(i, len)) {
 
-        `ThreadLocal`<?> k = e.get();
+        ThreadLocal<?> k = e.get();
 
         if (k == key) {
             e.value = value;
@@ -551,7 +551,7 @@ private int expungeStaleEntry(int staleSlot) {
     for (i = nextIndex(staleSlot, len);
          (e = tab[i]) != null;
          i = nextIndex(i, len)) {
-        `ThreadLocal`<?> k = e.get();
+        ThreadLocal<?> k = e.get();
         if (k == null) {
             e.value = null;
             tab[i] = null;
@@ -602,7 +602,7 @@ if (h != i) {
 
 ### `ThreadLocalMap`扩容机制
 
-在``ThreadLocalMap.set()`方法的最后，如果执行完启发式清理工作后，未清理到任何数据，且当前散列数组中`Entry`的数量已经达到了列表的扩容阈值`(len*2/3)`，就开始执行`rehash()`逻辑：
+在`ThreadLocalMap.set()`方法的最后，如果执行完启发式清理工作后，未清理到任何数据，且当前散列数组中`Entry`的数量已经达到了列表的扩容阈值`(len*2/3)`，就开始执行`rehash()`逻辑：
 
 ```java
 if (!cleanSomeSlots(i, sz) && sz >= threshold)
@@ -653,7 +653,7 @@ private void resize() {
     for (int j = 0; j < oldLen; ++j) {
         Entry e = oldTab[j];
         if (e != null) {
-            `ThreadLocal`<?> k = e.get();
+            ThreadLocal<?> k = e.get();
             if (k == null) {
                 e.value = null;
             } else {
@@ -711,7 +711,7 @@ private Entry getEntryAfterMiss(ThreadLocal<?> key, int i, Entry e) {
     int len = tab.length;
 
     while (e != null) {
-        `ThreadLocal`<?> k = e.get();
+        ThreadLocal<?> k = e.get();
         if (k == key)
             return e;
         if (k == null)
@@ -773,7 +773,7 @@ public class InheritableThreadLocalDemo {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("子线程获取父类`ThreadLocal`数据：" + `ThreadLocal`.get());
+                System.out.println("子线程获取父类ThreadLocal数据：" + ThreadLocal.get());
                 System.out.println("子线程获取父类inheritableThreadLocal数据：" + inheritableThreadLocal.get());
             }
         }).start();
@@ -784,7 +784,7 @@ public class InheritableThreadLocalDemo {
 打印结果：
 
 ```java
-子线程获取父类`ThreadLocal`数据：null
+子线程获取父类ThreadLocal数据：null
 子线程获取父类inheritableThreadLocal数据：父类数据:inheritableThreadLocal
 ```
 
